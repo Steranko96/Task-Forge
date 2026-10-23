@@ -12,6 +12,15 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 
+from dotenv.main import load_dotenv
+from .config import check_debug, check_env
+import os
+
+load_dotenv()
+
+# Custom code - this has been added by the developer to support custom functionality outside of base django
+APP_ENV = check_env(os.getenv("APP_ENV"))
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,7 +32,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2ylx-aq+6*=o+cop6^@w$&@v)$0v*4^bsu4r2dm7ur_+bkut5t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = check_debug(os.getenv("DEBUG"), APP_ENV)
 
 ALLOWED_HOSTS = []
 
@@ -37,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tasks',
 ]
 
 MIDDLEWARE = [
