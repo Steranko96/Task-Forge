@@ -68,6 +68,38 @@ System check identified no issues (0 silenced).
 
 This verifies that Django detects no problems covered by its registered system checks. It does not guarantee that all application functionality works.
 
+### Configure Environment Variables
+
+TaskForge uses environment variables to manage application settings and credentials.
+
+Copy the example configuration file:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and replace `SECRET_KEY=change-me` with a unique secret key.
+
+You can generate one using Django:
+
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+For local development, use:
+
+```dotenv
+APP_ENV=development
+DEBUG=true
+ALLOWED_HOSTS=localhost,127.0.0.1
+```
+
+TaskForge uses SQLite in development, so PostgreSQL connection variables (`DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`) are not required locally.
+
+In production, set `APP_ENV=production`, `DEBUG=false`, configure the permitted hostnames, and supply valid PostgreSQL credentials.
+
+**Security:** Never commit `.env` or real credentials to Git. Only `.env.example`, containing safe examples and placeholders, should be tracked.
+
 ### 5. Start the development server
 
 ```bash
