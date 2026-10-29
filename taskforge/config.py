@@ -1,3 +1,6 @@
+import os
+import ast
+
 # config function: check DEBUG
 def check_debug(DEBUG, app_env):
 
@@ -23,3 +26,57 @@ def check_env(APP_ENV):
          raise ValueError(f"Invalid config value: [APP_ENV]={APP_ENV}")
 
     return APP_ENV.lower()
+
+# config function: check SECRET_KEY
+def check_secret_key(SECRET_KEY):
+    placeholders = ['change-me']
+    if SECRET_KEY is None or SECRET_KEY == "" or SECRET_KEY in placeholders:
+        raise ValueError('SECRET_KEY is not valid')
+
+    return SECRET_KEY
+
+# config function: parse ALLOWED_HOSTS
+def parse_allowed_hosts(allowed_host):
+
+    if allowed_host is None or len(allowed_host) == 0:
+        raise ValueError('ALLOWED_HOSTS must not be None or empty')
+
+    clean_list = []
+    for host in allowed_host.split(","):
+        host = host.strip()
+        if host == '':
+            raise ValueError("host cannot be ''")
+        clean_list.append(host)
+
+    return clean_list
+
+def database_selection(app_env, base_dir):
+    if app_env is None:
+        raise ValueError("DB setting cannot be None")
+
+    elif app_env == 'production':
+
+        prod_settings = {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME':     os.getenv("DB_NAME"),
+            'USER':     os.getenv("DB_USER"),
+            'PASSWORD': os.getenv("DB_PASSWORD"),
+            'HOST':     os.getenv("DB_HOST"),
+            'PORT':     os.getenv("DB_PORT")
+        }
+
+        for key in prod_settings:
+            if prod_settings[key] is None:
+                raise ValueError(f'DB setting {key} cannot be none')
+            elif prod_settings[key] == "":
+                raise ValueError(f'DB setting {key} cannot be ""')
+
+
+        return prod_settings
+    else:
+        development_settings = {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': base_dir / 'db.sqlite3',
+        }
+
+        return development_settings

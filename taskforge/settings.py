@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 
 from dotenv.main import load_dotenv
-from .config import check_debug, check_env
+from .config import check_debug, check_env, check_secret_key, database_selection, parse_allowed_hosts
 import os
 
 load_dotenv()
@@ -29,13 +29,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2ylx-aq+6*=o+cop6^@w$&@v)$0v*4^bsu4r2dm7ur_+bkut5t'
+SECRET_KEY = check_secret_key(os.getenv("SECRET_KEY"))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
 DEBUG = check_debug(os.getenv("DEBUG"), APP_ENV)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = parse_allowed_hosts(os.getenv("ALLOWED_HOSTS"))
 
 
 # Application definition
@@ -84,12 +84,8 @@ WSGI_APPLICATION = 'taskforge.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": database_selection(APP_ENV, BASE_DIR)
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
