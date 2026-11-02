@@ -1,5 +1,4 @@
 import os
-import ast
 
 # config function: check DEBUG
 def check_debug(DEBUG, app_env):
